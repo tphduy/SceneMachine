@@ -1,0 +1,16 @@
+PODS:
+  - SceneMachine (0.0.1)
+
+DEPENDENCIES:
+  - SceneMachine (from `../`)
+
+EXTERNAL SOURCES:
+  SceneMachine:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  SceneMachine: 4a760dad1d5554f05c7e731a1a6af6923b7b0e56
+
+PODFILE CHECKSUM: 79d09eedc76b525a6b2da240cb9bd5106dc153d6
+
+COCOAPODS: 1.10.1
