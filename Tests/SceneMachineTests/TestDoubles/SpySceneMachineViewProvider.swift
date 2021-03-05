@@ -40,21 +40,21 @@ final class SpySceneMachineViewProvider: SceneMachineViewProvider {
         return stubbedContentView
     }
 
-    var invokedEmtyView = false
-    var invokedEmtyViewCount = 0
-    var stubbedEmtyViewResult: UIView!
+    var invokedEmptyView = false
+    var invokedEmptyViewCount = 0
+    var stubbedEmptyViewResult: UIView!
 
-    func emptyView() -> UIView {
-        invokedEmtyView = true
-        invokedEmtyViewCount += 1
-        return stubbedEmtyViewResult
+    func emptyView() -> UIView? {
+        invokedEmptyView = true
+        invokedEmptyViewCount += 1
+        return stubbedEmptyViewResult
     }
 
     var invokedLoadingView = false
     var invokedLoadingViewCount = 0
     var stubbedLoadingViewResult: UIView!
 
-    func loadingView() -> UIView {
+    func loadingView() -> UIView? {
         invokedLoadingView = true
         invokedLoadingViewCount += 1
         return stubbedLoadingViewResult
@@ -66,7 +66,7 @@ final class SpySceneMachineViewProvider: SceneMachineViewProvider {
     var invokedErrorViewParametersList = [(error: Error, Void)]()
     var stubbedErrorViewResult: UIView!
 
-    func errorView(error: Error) -> UIView {
+    func errorView(error: Error) -> UIView? {
         invokedErrorView = true
         invokedErrorViewCount += 1
         invokedErrorViewParameters = (error, ())
