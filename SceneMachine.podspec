@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'SceneMachine'
-  s.version = '0.0.1'
+  s.version = '0.0.2'
   s.summary = 'The SceneMachine manages the stages of a view'
   s.description = 'The SceneMachine manages the stages of a view (loading, empty, error, content)'
   s.homepage = 'https://github.com/duytph/SceneMachine'
