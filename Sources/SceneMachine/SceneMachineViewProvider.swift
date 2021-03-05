@@ -20,11 +20,11 @@ public protocol SceneMachineViewProvider: AnyObject {
     var contentView: UIView { get }
     
     /// A stateful view that will cover underlying content view up when having no data
-    func emptyView() -> UIView
+    func emptyView() -> UIView?
     
     /// A stateful view that will cover underlying content view up when loading
-    func loadingView() -> UIView
+    func loadingView() -> UIView?
     
     /// A stateful view that will cover underlying content view up when encountering error
-    func errorView(error: Error) -> UIView
+    func errorView(error: Error) -> UIView?
 }

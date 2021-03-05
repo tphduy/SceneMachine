@@ -39,7 +39,7 @@ public struct DefaultSceneMachine<Item: Emptiable>: SceneMachine {
     public func present(
         state: Loadable<Item>,
         provider: SceneMachineViewProvider) {
-        let view: UIView
+        let view: UIView?
         switch state {
         case .isLoading(.some):
             view = provider.contentView
@@ -53,8 +53,9 @@ public struct DefaultSceneMachine<Item: Emptiable>: SceneMachine {
             view = provider.errorView(error: error)
         }
         
+        guard let validView = view else { return }
         present(
-            statefulView: view,
+            statefulView: validView,
             parentView: provider.parentView,
             constrainedTargetView: provider.constrainedTargetView)
     }
