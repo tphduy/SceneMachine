@@ -20,14 +20,14 @@ final class SpySceneMachineViewProvider: SceneMachineViewProvider {
         return stubbedParentView
     }
 
-    var invokedConstrainedTargetViewGetter = false
-    var invokedConstrainedTargetViewGetterCount = 0
-    var stubbedConstrainedTargetView: UIView!
+    var invokedconstraintViewGetter = false
+    var invokedconstraintViewGetterCount = 0
+    var stubbedconstraintView: UIView!
 
-    var constrainedTargetView: UIView {
-        invokedConstrainedTargetViewGetter = true
-        invokedConstrainedTargetViewGetterCount += 1
-        return stubbedConstrainedTargetView
+    var constraintView: UIView {
+        invokedconstraintViewGetter = true
+        invokedconstraintViewGetterCount += 1
+        return stubbedconstraintView
     }
 
     var invokedContentViewGetter = false

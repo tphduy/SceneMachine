@@ -12,7 +12,9 @@ public struct AnySceneMachine<Item: Emptiable>: SceneMachine {
     
     // MARK: - SceneMachine
     
-    public func present(state: Loadable<Item>, provider: SceneMachineViewProvider) {
+    public func present(
+        _ state: Loadable<Item>,
+        by provider: SceneMachineViewProvider) {
         presentHandler(state, provider)
     }
     

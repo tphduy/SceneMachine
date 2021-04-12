@@ -7,24 +7,24 @@
 
 import UIKit
 
-/// Auxiliary part of `SceneMachine`, providing material views for its state presentation
+/// Auxiliary part of `SceneMachine`, providing the appropriate views to represent a state.
 public protocol SceneMachineViewProvider: AnyObject {
     
-    /// A view that the stateful views should be added as subview
+    /// A view that the stateful views should be added as subview.
     var parentView: UIView { get }
     
-    /// A view that the stateful views should be constrained by
-    var constrainedTargetView: UIView { get }
+    /// A view that the stateful views should be equal to by constraint implementation.
+    var constraintView: UIView { get }
     
-    /// The actual underlying content view, that should be covered up by the stateful views
+    /// The actual underlying content view, that should be covered up by the stateful views.
     var contentView: UIView { get }
     
-    /// A stateful view that will cover underlying content view up when having no data
+    /// A view that will cover the underlying content view up when having no data.
     func emptyView() -> UIView?
     
-    /// A stateful view that will cover underlying content view up when loading
+    /// A stateful view that will cover the underlying content view up when loading.
     func loadingView() -> UIView?
     
-    /// A stateful view that will cover underlying content view up when encountering error
+    /// A stateful view that will cover the underlying content view up when encountering an error.
     func errorView(error: Error) -> UIView?
 }

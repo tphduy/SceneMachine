@@ -8,7 +8,6 @@
 import XCTest
 @testable import SceneMachine
 
-/*
 final class StateMachineTests: XCTestCase {
     
     var provider: SpySceneMachineViewProvider!
@@ -17,12 +16,13 @@ final class StateMachineTests: XCTestCase {
     override func setUpWithError() throws {
         provider = SpySceneMachineViewProvider()
         provider.stubbedParentView = UIView()
-        provider.stubbedConstrainedTargetView = UIView()
+        provider.stubbedconstraintView = UIView()
         provider.stubbedContentView = UIView()
         provider.stubbedLoadingViewResult = UIView()
         provider.stubbedEmptyViewResult = UIView()
         provider.stubbedErrorViewResult = UIView()
-        provider.stubbedParentView.addSubview(provider.stubbedConstrainedTargetView)
+        provider.parentView.addSubview(provider.constraintView)
+        
         sut = DefaultSceneMachine()
     }
 
@@ -31,107 +31,120 @@ final class StateMachineTests: XCTestCase {
         sut = nil
     }
     
-    // MARK: - present(state:provider)
+    // MARK: Test Cases - present(_:by)
     
-    func test_presentState_whenStateIsLoading_withLastItem() throws {
-        let view = provider.contentView
-        let parentView = provider.parentView
+    func test_presentStateByProvider_whenAppropriateStatefulIsNil() throws {
+        let state = Loadable<[Int]>.isLoading(last: nil)
+        provider.stubbedLoadingViewResult = nil
         
-        XCTAssertFalse(view.isDescendant(of: parentView))
+        XCTAssertFalse(provider.invokedLoadingView)
         
-        sut.present(state: .isLoading(last: [0]), provider: provider)
+        sut.present(state, by: provider)
         
-        XCTAssertTrue(view.isDescendant(of: parentView))
-        XCTAssertEqual(parentView.subviews.last, view)
+        XCTAssertTrue(provider.invokedLoadingView)
+        XCTAssertEqual(provider.parentView.subviews, [provider.constraintView])
     }
     
-    func test_presentState_whenStateIsLoading_withoutLastItem() throws {
-        let view = provider.loadingView()
-        let parentView = provider.parentView
+    func test_presentStateByProvider() throws {
+        let state = Loadable<[Int]>.isLoading(last: nil)
         
-        XCTAssertFalse(view.isDescendant(of: parentView))
+        XCTAssertFalse(provider.invokedLoadingView)
         
-        sut.present(state: .isLoading(last: nil), provider: provider)
+        sut.present(state, by: provider)
         
-        XCTAssertTrue(view.isDescendant(of: parentView))
-        XCTAssertEqual(parentView.subviews.last, view)
+        XCTAssertTrue(provider.invokedLoadingView)
+        XCTAssertEqual(provider.parentView.subviews.last, provider.loadingView())
     }
     
-    func test_presentState_whenStateIsLoaded_withEmptyItem() throws {
-        let view = provider.emptyView()
-        let parentView = provider.parentView
-        
-        XCTAssertFalse(view.isDescendant(of: parentView))
-        
-        sut.present(state: .loaded([]), provider: provider)
-        
-        XCTAssertTrue(view.isDescendant(of: parentView))
-        XCTAssertEqual(parentView.subviews.last, view)
-    }
+    // MARK: Test Cases - getStatefulView(represent:by)
     
-    func test_presentState_whenStateIsLoaded_withItem() throws {
-        let view = provider.contentView
-        let parentView = provider.parentView
+    func test_getStatefulViewRepresentStateByProvider() throws {
+        XCTAssertEqual(
+            sut.getStatefulView(
+                represent: .isLoading(last: nil),
+                by: provider),
+            provider.loadingView())
         
-        XCTAssertFalse(view.isDescendant(of: parentView))
+        XCTAssertEqual(
+            sut.getStatefulView(
+                represent: .isLoading(last: [1]),
+                by: provider),
+            provider.contentView)
         
-        sut.present(state: .loaded([0]), provider: provider)
+        XCTAssertEqual(
+            sut.getStatefulView(
+                represent: .loaded([]),
+                by: provider),
+            provider.emptyView())
         
-        XCTAssertTrue(view.isDescendant(of: parentView))
-        XCTAssertEqual(parentView.subviews.last, view)
-    }
-    
-    func test_presentState_whenStateIsFailed() throws {
+        XCTAssertEqual(
+            sut.getStatefulView(
+                represent: .loaded([1]),
+                by: provider),
+            provider.contentView)
+        
         let error = StubError()
-        let view = provider.errorView(error: error)
-        let parentView = provider.parentView
+        XCTAssertEqual(
+            sut.getStatefulView(
+                represent: .failed(error),
+                by: provider),
+            provider.errorView(error: error))
+    }
+    
+    // MARK: Test Cases - present(_:in:equalTo)
+    
+    func test_presentViewInParentViewEqualToConstraintView_whenViewIsSubviewAlready() throws {
+        let view = UIView()
+        let parentView = UIView()
+        let constraintView = UIView()
+        let otherView = UIView()
+        
+        parentView.addSubview(constraintView)
+        parentView.addSubview(view)
+        parentView.addSubview(otherView)
+        
+        XCTAssertTrue(view.isDescendant(of: parentView))
+        
+        sut.present(
+            view,
+            in: parentView,
+            equalTo: constraintView)
+        
+        XCTAssertEqual(parentView.subviews.last, view)
+        XCTAssertFalse(view.isDescendant(of: constraintView))
+        XCTAssertTrue(view.translatesAutoresizingMaskIntoConstraints)
+    }
+    
+    func test_presentViewInParentViewEqualToConstraintView() throws {
+        let view = UIView()
+        let parentView = UIView()
+        let constraintView = UIView()
+        let otherView = UIView()
+        parentView.addSubview(constraintView)
+        parentView.addSubview(otherView)
         
         XCTAssertFalse(view.isDescendant(of: parentView))
         
-        sut.present(state: .failed(error), provider: provider)
-        
-        XCTAssertTrue(view.isDescendant(of: parentView))
-        XCTAssertEqual(parentView.subviews.last, view)
-    }
-    
-    func test_presentView() throws {
-        let view = UIView()
-        let parentView = UIView()
-        let constrainedTargetView = UIView()
-        
-        parentView.addSubview(constrainedTargetView)
-        
         sut.present(
-            statefulView: view,
-            parentView: parentView,
-            constrainedTargetView: constrainedTargetView)
-        
-        let constrained = view
-            .constraints
-            .flatMap { (constraint: NSLayoutConstraint) in
-                [constraint.firstItem, constraint.secondItem]
-            }
-            .allSatisfy { $0 === view || $0 === constrainedTargetView }
-        
-        XCTAssertTrue(!view.translatesAutoresizingMaskIntoConstraints)
-        XCTAssertTrue(view.isDescendant(of: parentView))
-        XCTAssertTrue(constrained)
-    }
-    
-    func test_presentView_whenViewIsDescendantOfParentViewAldready() throws {
-        let view = UIView()
-        let parentView = UIView()
-        let constrainedTargetView = UIView()
-        
-        parentView.addSubview(view)
-        parentView.addSubview(constrainedTargetView)
-        
-        sut.present(
-            statefulView: view,
-            parentView: parentView,
-            constrainedTargetView: constrainedTargetView)
+            view,
+            in: parentView,
+            equalTo: constraintView)
         
         XCTAssertEqual(parentView.subviews.last, view)
+        XCTAssertFalse(view.isDescendant(of: constraintView))
+        XCTAssertFalse(view.translatesAutoresizingMaskIntoConstraints)
+    }
+    
+    // MARK: Test Cases - constraint(_:equalTo)
+    
+    func test_constraintFirstViewToSecondView() throws {
+        let firstView = UIView()
+        let secondView = UIView()
+        secondView.addSubview(firstView)
+        
+        sut.constraint(firstView, equalTo: secondView)
+        
+        XCTAssertFalse(firstView.translatesAutoresizingMaskIntoConstraints)
+        XCTAssertFalse(secondView.constraints.isEmpty)
     }
 }
-*/

@@ -16,8 +16,8 @@ final class SpySceneMachine<Item: Emptiable>: SceneMachine {
     var invokedPresentParametersList = [(state: Loadable<Item>, provider: SceneMachineViewProvider)]()
 
     func present(
-        state: Loadable<Item>,
-        provider: SceneMachineViewProvider) {
+        _ state: Loadable<Item>,
+        by provider: SceneMachineViewProvider) {
         invokedPresent = true
         invokedPresentCount += 1
         invokedPresentParameters = (state, provider)
